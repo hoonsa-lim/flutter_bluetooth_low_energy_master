@@ -7,7 +7,7 @@ class PeripheralScreen extends StatefulWidget {
 
 class _PeripheralScreenState extends State<PeripheralScreen> {
   bool _lights = false;
-
+//임가의 
   @override
   Widget build(BuildContext context) {
     return Column(
