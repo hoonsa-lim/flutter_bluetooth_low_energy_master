@@ -8,7 +8,7 @@
 
 
    <application
-        android:label="bluetooth_finder"
+        android:label="Bluetooth Finder"
         android:icon="@mipmap/ic_launcher">
         <activity
             android:name=".MainActivity"

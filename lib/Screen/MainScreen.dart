@@ -4,6 +4,7 @@ import 'package:bluetooth_finder/Store/ColorStore.dart';
 import 'package:bluetooth_finder/Store/BluetoothStore.dart';
 import 'package:bluetooth_finder/Store/StringStore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_blue/flutter_blue.dart';
 import 'package:provider/provider.dart';
 
@@ -31,76 +32,102 @@ class _MainScreenState extends State<MainScreen> {
     print("MainScreen build");
     var bluetoothStore = Provider.of<BluetoothStore>(context, listen: true);
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(StringStore.AppName),
-        centerTitle: true,
+    return WillPopScope(
+      onWillPop: _onBackPressed,
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text(StringStore.AppName),
+          centerTitle: true,
+          leading: IconButton(
+            icon: const Icon(Icons.west_sharp),
+            onPressed: _onBackPressed,
+          ),
+        ),
+        // drawer: Drawer(
+        //   child: ListView(
+        //     padding: EdgeInsets.zero,
+        //     children: <Widget>[
+        //       DrawerHeader(
+        //         child: Text('Drawer Header'),
+        //         decoration: BoxDecoration(
+        //           color: const Color(ColorStore.primaryColor),
+        //         ),
+        //       ),
+        //       ListTile(
+        //         title: Text('설문 추가'),
+        //         onTap: () {
+        //           Navigator.pop(context);
+        //           // Navigator.pushNamed(context, "/RegisterSurveyScreen");
+        //         },
+        //       ),
+        //       ListTile(
+        //         title: Text('Item'),
+        //         onTap: () {
+        //           Navigator.pop(context);
+        //         },
+        //       ),
+        //       ListTile(
+        //         title: Text('Item'),
+        //         onTap: () {
+        //           Navigator.pop(context);
+        //         },
+        //       ),
+        //       ListTile(
+        //         title: Text('Item'),
+        //         onTap: () {
+        //           Navigator.pop(context);
+        //         },
+        //       ),
+        //     ],
+        //   ),
+        // ),
+        body: Center(
+          child: _WidgetOptions.elementAt(_screenSelectedIndex),
+        ),
+        floatingActionButton: getFloatingButton(_screenSelectedIndex, bluetoothStore),
+        // bottomNavigationBar: Theme(
+        //   data: Theme.of(context).copyWith(
+        //     canvasColor: Color(ColorStore.primaryColor),
+        //     textTheme: Theme.of(context).textTheme.copyWith(caption: TextStyle(color: Colors.white))
+        //   ),
+          // child: BottomNavigationBar(
+          //   items: const <BottomNavigationBarItem>[
+          //     BottomNavigationBarItem(
+          //       icon: Icon(Icons.search_outlined),
+          //       label: '기기 검색',
+          //       backgroundColor: const Color(ColorStore.primaryColor),
+          //     ),
+          //     BottomNavigationBarItem(
+          //       icon: Icon(Icons.bluetooth_searching_sharp),
+          //       label: '신호 송신',
+          //       backgroundColor: const Color(ColorStore.primaryColor),
+          //     ),
+          //   ],
+          //   currentIndex: _screenSelectedIndex,
+          //   selectedItemColor: Colors.white,
+          //   onTap: _onItemTapped,
+          // ),
+        // ),
       ),
-      drawer: Drawer(
-        child: ListView(
-          padding: EdgeInsets.zero,
-          children: <Widget>[
-            DrawerHeader(
-              child: Text('Drawer Header'),
-              decoration: BoxDecoration(
-                color: const Color(ColorStore.primaryColor),
-              ),
+    );
+  }
+
+  Future<bool> _onBackPressed(){
+    return showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: Text("앱을 종료 하시겠습니까?"),
+          actions: <Widget>[
+            FlatButton(
+              child: Text("NO"),
+              onPressed: ()=>Navigator.pop(context, false),
             ),
-            ListTile(
-              title: Text('설문 추가'),
-              onTap: () {
-                Navigator.pop(context);
-                // Navigator.pushNamed(context, "/RegisterSurveyScreen");
-              },
-            ),
-            ListTile(
-              title: Text('Item'),
-              onTap: () {
-                Navigator.pop(context);
-              },
-            ),
-            ListTile(
-              title: Text('Item'),
-              onTap: () {
-                Navigator.pop(context);
-              },
-            ),
-            ListTile(
-              title: Text('Item'),
-              onTap: () {
-                Navigator.pop(context);
-              },
-            ),
+            FlatButton(
+              child: Text("yes"),
+              onPressed: ()=> SystemChannels.platform.invokeMethod('SystemNavigator.pop'),
+            )
           ],
-        ),
-      ),
-      body: Center(
-        child: _WidgetOptions.elementAt(_screenSelectedIndex),
-      ),
-      floatingActionButton: getFloatingButton(_screenSelectedIndex, bluetoothStore),
-      bottomNavigationBar: Theme(
-        data: Theme.of(context).copyWith(
-          canvasColor: Color(ColorStore.primaryColor),
-          textTheme: Theme.of(context).textTheme.copyWith(caption: TextStyle(color: Colors.white))
-        ),
-        child: BottomNavigationBar(
-          items: const <BottomNavigationBarItem>[
-            BottomNavigationBarItem(
-              icon: Icon(Icons.search_outlined),
-              label: '기기 검색',
-              backgroundColor: const Color(ColorStore.primaryColor),
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.bluetooth_searching_sharp),
-              label: '신호 송신',
-              backgroundColor: const Color(ColorStore.primaryColor),
-            ),
-          ],
-          currentIndex: _screenSelectedIndex,
-          selectedItemColor: Colors.white,
-          onTap: _onItemTapped,
-        ),
-      ),
+        )
     );
   }
 
